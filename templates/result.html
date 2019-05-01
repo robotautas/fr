@@ -9,11 +9,24 @@
 
 
 
-
-<img src="{{url_for('get_unknown', filename=image)}}" >
-    </br>
-      {{ answer }}
-
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-2">
+      </div>
+        <div class="col-md-auto">
+          <div class="card mb-auto shadow-sm">
+            <img class="img-fluid" src="{{url_for('get_unknown', filename=image)}}" />
+            <div class="card-body">
+              <h5 class="card-title">{{ answer }}</h5>
+              <div class="d-flex justify-content-between align-items-center">
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="col col-lg-2">
+    </div>
+  </div>
+</div>
 
 
 {% endblock %}
