@@ -40,18 +40,5 @@ def compare(unknown):
 
     return answer
 
-# def imgpaths():
-#
-#     """
-#     Gražina path'us iki pažįstamų nuotraukų, kuriuos paskui naudos compare() funkcijoje
-#     """
-#
-#     for file in os.walk('./static/known'):
-#         root = file[0]
-#         imglist = file[2]
-#         pathlist = []
-#         for i in imglist:
-#             pathlist.append(f'{root}/{i}')
-#     newlist = list(os.walk('./static/known'))[2]
-#     print(newlist)
-#     return pathlist
+
+

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, request, send_from_directory, redirect, url_for
+from flask import Flask, render_template, request, send_from_directory, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 import recognize
 import os
@@ -12,7 +12,7 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 db = SQLAlchemy(app)
 
-
+app.secret_key = b'supersecret'
 
 
 # Sugeneruoja pažįstamų nuotraukų duomenų bazę, kurioje yra relative path iki nuotraukos ir vardas pavardė.
@@ -42,19 +42,23 @@ def result():
     Ištrina failus iš static.
     Pasiima vartotojo pateiktą nuotrauką, praleidžia per atpažinimo funkciją compare().
     '''
-    if request.method == 'POST':
+    try:
+        if request.method == 'POST':
 
-        # filelist = [f for f in os.listdir('./static/unknown')]
-        # for f in filelist:
-        #     os.remove(os.path.join('./static/unknown', f))
+            # filelist = [f for f in os.listdir('./static/unknown')]
+            # for f in filelist:
+            #     os.remove(os.path.join('./static/unknown', f))
 
-        unknown = request.files['unknown']
-        unknown.save(f'./static/unknown/{unknown.filename}')
-        filename = unknown.filename
-        answer = recognize.compare(unknown=unknown)
-        # answer = 'nesvarbu'
-        print(filename)
-        return render_template('result.html', answer=answer, image=filename)
+            unknown = request.files['unknown']
+            unknown.save(f'./static/unknown/{unknown.filename}')
+            filename = unknown.filename
+            answer = recognize.compare(unknown=unknown)
+            # answer = 'nesvarbu'
+            print(filename)
+            return render_template('result.html', answer=answer, image=filename)
+    except IndexError:
+        flash('Something went wrong :(')
+        return redirect(url_for('index'))
 
 @app.route('/static/unknown/<filename>')
 def get_unknown(filename):
