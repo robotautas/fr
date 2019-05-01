@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
+
+
+
+      <div class="container bg-light align-items-center">
+        <h4>Upload More Images:</h4>
+        <form action="{{ url_for('show_data') }}" method="POST" enctype="multipart/form-data">
+          <input title="" type="file" name="known" accept=".jpg,.jpeg">
+          <input title="" type="text" name="label" placeholder="Name">
+          <button type="submit"> Add </button>
+        </form>
+
+
+
+
+
+  <div class="album py-5 bg-light">
+    <div class="container">
+
+      <div class="row">
+        {% for item in instance %}
+          <div class="col-md-3">
+          <div class="card mb-3 shadow-sm">
+            <img class="img-fluid" src="{{ url_for('get_known', filename=item.image_file) }}" />
+            <div class="card-body">
+              <h5 class="card-title">{{item.label}}</h5>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                    <form action="{{ url_for('delete', filename=item.image_file)}}" method="POST">
+                        <input class="btn btn-danger btn-sm" type="submit" value="Remove">
+                    </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+ </div>
+
+
+
+
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{% endblock %}

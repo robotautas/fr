@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+{% block body %}
+
+
+
+
+<img src="{{url_for('get_unknown', filename=image)}}" >
+    </br>
+      {{ answer }}
+
+
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{% endblock %}
