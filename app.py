@@ -57,7 +57,7 @@ def result():
             print(filename)
             return render_template('result.html', answer=answer, image=filename)
     except IndexError:
-        flash('Something went wrong :(')
+        flash("Something went wrong :( Most likely, algorithm couldn't properly encode a face in your image. Try another image!")
         return redirect(url_for('index'))
 
 @app.route('/static/unknown/<filename>')
