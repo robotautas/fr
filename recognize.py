@@ -5,14 +5,14 @@ from app import Known
 
 def compare(unknown):
     """
-    Apps'o razinka, atpažinimo logika.
-    Encodina nuotraukas iš imgpaths() pateikto listo,
-    encodina argumentuose gautą vartotojo pateiktą nuotrauką,
-    lygina tų encodingų rezultatus.
-    atiduoda dict, kuriame k= reliatyvus kelias iki nuotraukos folderyje,
-    v = True jeigu sutampa veidai, False, jei nesutampa.
+    Atpažinimo logika. Encodina nuotraukas iš katalogo,
+    encodina vartotojo pateiktą nuotrauką, lygina tų encodingų rezultatus.
+    atiduoda dict, kuriame k= nuotraukos pavadinimas,v = boolean reiksme.
+    True jeigu sutampa veidai, False, jei nesutampa.
     Jeigu sutapusios nuotraukos path = path iš duombazės,
     atiduoda vardą pavardę iš tos pačios eilutės.
+
+    jeigu atsakyme nera True reiksmes, atsakyma prilygina 'Unrecognized Person'
 
     """
     img_names = list(os.walk('./static/known'))[0][2]
@@ -40,5 +40,13 @@ def compare(unknown):
 
     return answer
 
+def validate(file):
+    try:
+        image = face_recognition.load_image_file(file)
+        face_recognition.face_encodings(image)[0]
+        return True
+    except IndexError:
+        return False
 
+validate('./static/known/vl.jpeg')
 
