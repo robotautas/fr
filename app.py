@@ -31,18 +31,19 @@ class Known(db.Model):
     def __repr__(self):
         return self.label
 
-@app.route('/', methods=['GET','POST'])
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
 
-
-@app.route('/result', methods=['GET','POST'])
+@app.route('/result', methods=['GET', 'POST'])
 def result():
-    '''
-    Ištrina failus iš static.
-    Pasiima vartotojo pateiktą nuotrauką, praleidžia per atpažinimo funkciją compare().
-    '''
+    """
+    Ištrina failus iš static/unknown.Pasiima vartotojo pateiktą nuotrauką, praleidžia per atpažinimo funkciją compare().
+    Jeigu nuotrauka tinka algoritmui, sugereruoja atsakymą ir atiduoda į render template parametrus.
+    Jeigu ne - siunčia pranešimą, kad nepavyko.
+    """
     try:
         if request.method == 'POST':
 
@@ -54,27 +55,15 @@ def result():
             unknown.save(f'./static/unknown/{unknown.filename}')
             filename = unknown.filename
             answer = recognize.compare(unknown=unknown)
-            print(filename)
-
-            # def save():
-            #     unknown.save(f'./static/known/{unknown.filename}')
-            #     label = request.form['add_unrecognized']
-            #     data = Known(image_file=unknown.filename, label=label)
-            #     db.session.add(data)
-            #     db.session.commit()
-            #     return redirect(url_for('/'))
-
-
-
-
 
             return render_template('result.html', answer=answer, image=filename, unrec='Unrecognized Person')
 
     except IndexError:
-        flash("Something went wrong :( Most likely, algorithm couldn't properly encode a face in your image, or in some images in DB")
+        flash("Algorithm couldn't properly encode a face in your image:(")
         return redirect(url_for('index'))
 
-@app.route('/static/unknown/<filename>', methods=['GET','POST'])
+
+@app.route('/static/unknown/<filename>', methods=['GET', 'POST'])
 def get_unknown(filename):
     folder = os.path.join(APP_ROOT, 'static', 'unknown')
     return send_from_directory(folder, filename)
@@ -82,6 +71,12 @@ def get_unknown(filename):
 
 @app.route('/data', methods=['GET', 'POST'])
 def show_data():
+
+    """
+    praleidžia nuotrauką per filtrą, ir prideda į duomenų bazę. Jei nepraeina filtro - siunčia pranešimą, kad netinka.
+    taip pat nuskaito visus duomenis iš DB ir prideda į render parametrus, iš kurių paskui jau su jinja2 formuojama
+    manage data skiltis.
+    """
 
     if request.method == 'POST':
             image = request.files['known']
@@ -101,38 +96,48 @@ def show_data():
 
 @app.route('/about')
 def about():
-
     return render_template('about.html')
 
 
 @app.route('/static/known/<filename>')
 def get_known(filename):
+    """
+    Funkcija skirta nuskaityti failus iš nurodyto katalogo
+    """
+
     folder = os.path.join(APP_ROOT, 'static', 'known')
     return send_from_directory(folder, filename)
 
 
 @app.route('/static/known/<filename>', methods=['POST'])
 def delete(filename):
+    """
+    Funkcija paleidžiama iš 'remove' mygtukų manage data skiltyje.
+    """
     data = Known.query.filter_by(image_file=filename).first()
-    print(data.id)
     db.session.delete(data)
     db.session.commit()
     os.remove(f'./static/known/{filename}')
     return redirect(url_for('show_data'))
 
-@app.route('/<filename>', methods=['GET','POST'])
-def add_unrecognized(filename):
-    if request.method == 'POST':
-        print(f'{filename} VAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        copyfile(f'./static/unknown/{filename}', f'./static/known/{filename}')
 
+@app.route('/<filename>', methods=['GET', 'POST'])
+def add_unrecognized(filename):
+
+    """
+    Jeigu nuotrauka nuskaityta, bet neatpažinta, home skiltyje atsiranda galimybė pridėti neatpažintą veidą į DB
+    Ši funkcija pririšta prie atsirandančios html formos.
+    """
+
+    if request.method == 'POST':
+        copyfile(f'./static/unknown/{filename}', f'./static/known/{filename}')
         label = request.form['add_unrecognized']
         data = Known(image_file=filename, label=label)
         db.session.add(data)
         db.session.commit()
         return redirect(url_for('index'))
 
-if __name__=='__main__':
-    # sys.setdefaultencoding('utf-8')
+
+if __name__ == '__main__':
     app.debug = True
     app.run()

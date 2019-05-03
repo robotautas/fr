@@ -11,9 +11,7 @@ def compare(unknown):
     True jeigu sutampa veidai, False, jei nesutampa.
     Jeigu sutapusios nuotraukos path = path iš duombazės,
     atiduoda vardą pavardę iš tos pačios eilutės.
-
     jeigu atsakyme nera True reiksmes, atsakyma prilygina 'Unrecognized Person'
-
     """
     img_names = list(os.walk('./static/known'))[0][2]
     enc_list = []
@@ -41,6 +39,9 @@ def compare(unknown):
     return answer
 
 def validate(file):
+    """
+
+    """
     try:
         image = face_recognition.load_image_file(file)
         face_recognition.face_encodings(image)[0]
@@ -48,5 +49,5 @@ def validate(file):
     except IndexError:
         return False
 
-validate('./static/known/vl.jpeg')
+
 
